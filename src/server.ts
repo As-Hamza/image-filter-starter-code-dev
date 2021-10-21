@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction, Request, Response} from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
@@ -35,12 +35,12 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
     return url.test(pURL);
   }
   
-    app.get( "/filteredimage", async ( req, res ) => {
+    app.get( "/filteredimage", async ( req: Request, res: Response, next: NextFunction ) => {
   
       // 1. validate the image_url query
       
       let image_url = req.query.image_url;
-      let is_image_url_valid = validate_URL(image_url);
+      //let is_image_url_valid = validate_URL(image_url);
       if(!image_url){
         res.status(400).send("image url missing")
 
@@ -52,31 +52,20 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
         else {
           try {
           // 2. call filterImageFromURL(image_url) to filter the image
-          let image_reponse = await filterImageFromURL(image_url);
-          if(image_reponse = "no image found"){
+          //let image_reponse = await filterImageFromURL(image_url);
+          let absolutePath: string = await filterImageFromURL(req.query.image_url) as string;
+          if(absolutePath = "no image found"){
             res.status(200).send("No image found at this given URL.")
 
           } else {
             // 3. send the resulting file in the response
-            res.sendFile(image_reponse);
-            res.on('finish', () => deleteLocalFiles([image_reponse]));
-            /*
-            res.status(200).sendFile(image_reponse, async callback=>{
-            
-            
-
-
-
-              // 4. deletes any files on the server on finish of the response
-              await deleteLocalFiles([image_reponse])
-
-            }) */
- 
+            res.sendFile(absolutePath);
+            res.on('finish', () => deleteLocalFiles([absolutePath])); 
           }
-          } catch (err) {
+          } catch (e) {
           // other errors
-          console.error(err)
-          res.status(200).send("Unable to process your request")
+          console.error(e)
+          next(e)
           }
         
         }

@@ -1,0 +1,5 @@
+### Deployment Endpoint 
+
+Endpoint : http://image-filter-starter-code-dev22222.us-east-1.elasticbeanstalk.com
+
+Endpoint + image URL: http://image-filter-starter-code-dev22222.us-east-1.elasticbeanstalk.com/filteredimage?image_url=https://timedotcom.files.wordpress.com/2019/03/kitten-report.jpg
